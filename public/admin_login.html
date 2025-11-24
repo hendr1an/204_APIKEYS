@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Retro System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RETRO THEME VARIABLES --- */
+        :root {
+            --retro-bg: #e0d8c3;
+            --retro-dark: #2c2c2c;
+            --retro-light: #ffffff;
+            --retro-green: #7bed9f; /* Retro Green */
+            --retro-border: 3px solid var(--retro-dark);
+            --retro-shadow: 8px 8px 0px var(--retro-dark);
+        }
+
+        body {
+            background-color: var(--retro-bg);
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--retro-dark);
+            background-image: radial-gradient(#b0a893 1px, transparent 1px);
+            background-size: 20px 20px;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Login Card Box */
+        .login-card {
+            background-color: var(--retro-light);
+            border: var(--retro-border);
+            box-shadow: var(--retro-shadow);
+            max-width: 450px;
+            width: 100%;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Header Styling */
+        h2 {
+            font-family: 'VT323', monospace;
+            font-size: 3rem;
+            text-transform: uppercase;
+            border-bottom: 4px double var(--retro-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Form Inputs */
+        .form-label {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border: 2px solid var(--retro-dark);
+            border-radius: 0; /* Kotak tajam */
+            font-family: 'Courier New', monospace;
+            background-color: #f8f9fa;
+            color: var(--retro-dark);
+            padding: 10px;
+        }
+
+        .form-control:focus {
+            background-color: #fff;
+            border-color: var(--retro-dark);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            outline: none;
+        }
+
+        /* Tombol Utama */
+        .btn-retro {
+            background-color: var(--retro-green);
+            color: var(--retro-dark);
+            border: 2px solid var(--retro-dark);
+            border-radius: 0;
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 5px 5px 0px var(--retro-dark);
+            transition: all 0.1s;
+        }
+
+        .btn-retro:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0px var(--retro-dark);
+            background-color: #5cdb85;
+            border-color: var(--retro-dark);
+            color: var(--retro-dark);
+        }
+
+        .btn-retro:active {
+            transform: translate(5px, 5px);
+            box-shadow: none;
+        }
+        
+        .btn-retro:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Link Kembali */
+        .back-link {
+            color: var(--retro-dark);
+            font-weight: bold;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .back-link:hover {
+            border-bottom: 2px solid var(--retro-dark);
+        }
+
+        /* Dekorasi Sudut */
+        .corner-deco {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--retro-dark);
+        }
+        .top-left { top: 5px; left: 5px; }
+        .top-right { top: 5px; right: 5px; }
+        .bottom-left { bottom: 5px; left: 5px; }
+        .bottom-right { bottom: 5px; right: 5px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container d-flex justify-content-center">
+        <div class="login-card">
+            <div class="corner-deco top-left"></div>
+            <div class="corner-deco top-right"></div>
+            <div class="corner-deco bottom-left"></div>
+            <div class="corner-deco bottom-right"></div>
+
+            <div class="text-center">
+                <h2>ACCESS_PORTAL</h2>
+                <p class="mb-4">> PLEASE AUTHENTICATE ADMIN IDENTITY</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="loginEmail" class="form-label">ADMIN_EMAIL:</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="user@system.root" required>
+                </div>
+                <div class="mb-4">
+                    <label for="loginPassword" class="form-label">SECRET_KEY (PASSWORD):</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="********" required>
+                </div>
+                
+                <button type="submit" id="loginAdminBtn" class="btn btn-retro w-100 py-2">
+                    [ ENTER SYSTEM ]
+                </button>
+            </form>
+            
+            <p id="loginMessage" class="mt-3 text-center font-monospace small fw-bold"></p>
+            
+            <div class="mt-4 pt-3 border-top border-dark border-2 text-center">
+                <a href="index.html" class="back-link">
+                    &lt;&lt; ABORT / BACK TO GENERATOR
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_LOGIN_URL = 'http://localhost:3000/admin/login';
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const messageArea = document.getElementById('loginMessage');
+            const btn = document.getElementById('loginAdminBtn');
+
+            // UI Loading state (Retro Style)
+            messageArea.textContent = "> HANDSHAKING WITH SERVER...";
+            messageArea.style.color = 'blue';
+            btn.disabled = true;
+            btn.textContent = "[ LOADING... ]";
+
+            try {
+                const response = await fetch(API_LOGIN_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('adminToken', data.token);
+                    
+                    messageArea.textContent = '> ACCESS GRANTED. REDIRECTING...';
+                    messageArea.style.color = 'green';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin_dashboard.html'; 
+                    }, 1000);
+
+                } else {
+                    messageArea.textContent = `> ACCESS DENIED: ${data.message || 'INVALID CREDENTIALS'}`;
+                    messageArea.style.color = 'red';
+                    btn.disabled = false;
+                    btn.textContent = "[ ENTER SYSTEM ]";
+                }
+            } catch (error) {
+                console.error(error);
+                messageArea.textContent = "> FATAL ERROR: SERVER UNREACHABLE.";
+                messageArea.style.color = 'red';
+                btn.disabled = false;
+                btn.textContent = "[ ENTER SYSTEM ]";
+            }
+        });
+    </script>
+</body>
+</html>
